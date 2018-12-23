@@ -14,7 +14,7 @@ Solutions of capacitated facility location problems
 
 ###  Problem Instance 
 
-![1545555046846](assets/1545555046846.png)
+![1545555046846](https://github.com/Gongzq5/Capacitated-Facility-Location-Problems/blob/master/assets/1545555046846.png?raw=true)
 
 ## 问题参考
 
@@ -34,10 +34,25 @@ Solutions of capacitated facility location problems
 
 就是普通的模拟退火，进行了如下的一些改进，并且参数经过了多次试验性的调整；
 
-**额外的改进：**
+* **邻域搜索策略：**
 
-- 降温开始时记录一个阈值，在多次迭代不发生改变时，将温度升高至该阈值，然后阈值减半；
-- 根据问题规模确定搜索次数（内循环次数），可以有效地处理问题规模增长后效果变差的情况。
+采用**5种**邻域搜索策略
+
+1. 随机将一个客户移动到另一个仓库
+2. 随机改变一个仓库的状态
+   * 若该仓库是打开的，那么尝试将该仓库的所有用户分配给其他仓库，然后关闭它；如果无法将所有用户都分配走，那么不恢复已被挪走的用户，也不改变该仓库的状态；
+   * 若该仓库是关闭的，那么将该仓库打开，并且给这个仓库随机分配一个客户；
+3. 随机选择2个客户交换仓库
+4. 随机选择3个客户轮换仓库
+5. 随机选择4个客户轮换仓库
+
+以上的策略在执行后都会验证，如果被挪走客户的仓库此时没有任何一个其他客户使用，那么将其关闭。
+
+* **额外的改进：**
+
+1. 降温开始时记录一个阈值，在多次迭代不发生改变时，将温度升高至该阈值，然后阈值减半；
+
+2. 根据问题规模确定搜索次数（内循环次数），可以有效地处理问题规模增长后效果变差的情况。
 
 #### 基本参数设置
 
@@ -58,42 +73,44 @@ Solutions of capacitated facility location problems
 
 #### 简介
 
-首先写了贪心的算法，贪心的算法在[`src/GreedyLocalSearch.cpp`](https://github.com/Gongzq5/Capacitated-Facility-Location-Problems/blob/master/src/GreedyLocalSearch.cpp)文件中有一个单独的函数可供查看；
+首先写了**贪心**的算法，贪心的算法在[`src/GreedyLocalSearch.cpp`](https://github.com/Gongzq5/Capacitated-Facility-Location-Problems/blob/master/src/GreedyLocalSearch.cpp)文件中有一个单独的函数可供查看；
 
-然后写了局部搜索的算法；
+然后写了**局部搜索**的算法；
 
-单独贪心和局部搜索的结果都不是很好，想到可以将两者结合起来进行计算。首先先使用贪心法求一个初始解，然后使用局部搜索在此初始解附近迭代，试图找到最优解；
+单独贪心和局部搜索的结果都不是很好，想到可以将两者结合起来进行计算。**首先先使用贪心法求一个初始解，然后使用局部搜索在此初始解附近迭代，试图找到最优解；**
+
+局部搜索使用的**邻域搜索策略**和模拟退火是相同的。
 
 **额外的改进：**
 
-* 为了避免问题的规模增加后代码运行次数不足的情况，我增加了根据问题规模决定循环次数的代码；
+1. 为了避免问题的规模增加后代码运行次数不足的情况，我增加了根据问题规模决定循环次数的代码；
 
-  ```cpp
-  int problemSize = instance.customerNum * instance.facilityNum;
-  for (int _i; _i < problemSize * 2000; _i++) {...}
-  ```
+    ```cpp
+    int problemSize = instance.customerNum * instance.facilityNum;
+    for (int _i; _i < problemSize * 2000; _i++) {...}
+    ```
 
-* 为了避免陷入局部最优，我增加了接受差解的代码，以期跳出局部最优；
+2. 为了避免陷入局部最优，我增加了接受差解的代码，以期跳出局部最优；
 
-  * 首先将接受差解的概率设置为0；
-  * 在限定的循环次数内，如果有一定次数没有发现更优的解，会线性的增加接受差解的概率；
-  * 由于参数的设定机制，接受差解的概率最多不会超过0.2，在实践中，通常不会超过0.01。但是取得的效果是显著的，在陷入局部最优（可能是全局最优）后会以较大的概率跳出该解，整个解检索的过程大致呈锯齿状分布；
+    * 首先将接受差解的概率设置为0；
+    * 在限定的循环次数内，如果有一定次数没有发现更优的解，会线性的增加接受差解的概率；
+    * 由于参数的设定机制，接受差解的概率最多不会超过0.2，在实践中，通常不会超过0.01。但是取得的效果是显著的，在陷入局部最优（可能是全局最优）后会以较大的概率跳出该解，整个解检索的过程大致呈锯齿状分布；
 
-  ```pseudocode
-  接受差解概率 badAcception = 0 
-  FOR i FROM 0 TO (problemSize * 2000)
-      {生成新解}
-      IF {新解效果好} THEN
-          {接收新解}
-          badAcception = 0
-      ELSE 
-          {以概率badAcception接受差解}
-          IF {不改变的次数大于 problemSize} THEN
-              badAcception += 0.0001;
-          END IF
-      END IF
-  END FOR
-  ```
+    ```pseudocode
+    接受差解概率 badAcception = 0 
+    FOR i FROM 0 TO (problemSize * 2000)
+        {生成新解}
+        IF {新解效果好} THEN
+            {接收新解}
+            badAcception = 0
+        ELSE 
+            {以概率badAcception接受差解}
+            IF {不改变的次数大于 problemSize} THEN
+                badAcception += 0.0001;
+            END IF
+        END IF
+    END FOR
+    ```
 
 #### 基本参数设置
 
