@@ -1,5 +1,7 @@
 # Capacitated-Facility-Location-Problems
-Solving of capacitated facility location problems 
+Solutions of capacitated facility location problems 
+
+[TOC]
 
 ## 问题背景
 
@@ -37,7 +39,7 @@ Solving of capacitated facility location problems
 - 降温开始时记录一个阈值，在多次迭代不发生改变时，将温度升高至该阈值，然后阈值减半；
 - 根据问题规模确定搜索次数（内循环次数），可以有效地处理问题规模增长后效果变差的情况。
 
-####基本参数设置
+#### 基本参数设置
 
 | 参数         | 设置                            | 备注                                       |
 | ------------ | ------------------------------- | ------------------------------------------ |
@@ -102,7 +104,7 @@ Solving of capacitated facility location problems
 
 -------------
 
-###附贪心算法的策略：
+### 附贪心算法的策略：
 
 每次从客户的角度出发，贪心离他最近的工厂；
 
@@ -126,7 +128,16 @@ END IF
 
 我还额外提供了一个结果矩阵的汇总的，命名为 **summary**。
 
-以下附结果表，具体结果请移步[github]()
+链接如下：
+
+|            | 模拟退火                                                     | 贪心+局部搜索                                                |
+| ---------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
+| 所有实验解 | [模拟退火三次实验的所有结果](https://github.com/Gongzq5/Capacitated-Facility-Location-Problems/tree/master/results/SA/allSolutions) | [局部搜索三次实验的所有结果](https://github.com/Gongzq5/Capacitated-Facility-Location-Problems/tree/master/results/Greedy%20and%20Local%20search/allSolutions) |
+| 所有最优解 | [模拟退火每个测例的最优解](https://github.com/Gongzq5/Capacitated-Facility-Location-Problems/tree/master/results/SA/optimizeSolutions) | [局部搜索每个测例的最优解](https://github.com/Gongzq5/Capacitated-Facility-Location-Problems/tree/master/results/Greedy%20and%20Local%20search/optimizeSolutions) |
+| 结果汇总   | [模拟退火每个测例具体结果的汇总](https://github.com/Gongzq5/Capacitated-Facility-Location-Problems/blob/master/results/SA/summary) | [局部搜索每个测例具体结果的汇总](https://github.com/Gongzq5/Capacitated-Facility-Location-Problems/blob/master/results/Greedy%20and%20Local%20search/summary) |
+| 结果表格   | [模拟退火实验结果的表格](https://github.com/Gongzq5/Capacitated-Facility-Location-Problems/blob/master/results/SA/result.md) | [局部搜索实验结果的表格](https://github.com/Gongzq5/Capacitated-Facility-Location-Problems/blob/master/results/Greedy%20and%20Local%20search/result.md) |
+
+以下附结果表格
 
 ### 模拟退火结果如下
 
